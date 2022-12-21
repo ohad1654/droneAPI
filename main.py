@@ -9,41 +9,42 @@ app = Flask(__name__)
 q = Queue(25)  # base64 string
 
 
-@app.route('/navigate-to')
-def index(roomName):
+@app.route('/navigate-to', methods=["POST"])
+def index():
     """
     בודק מה המיקום של החדר ומגדיר את נקודת היעד של הרחפן
     :param roomName the room name to navigate to
     :return 400 אם אי אפשר להגיע מהמיקום הנוכחי ליעד
     """
-
-    coordinates = DB.getRoomCoordinates(roomName)
-    if coordinates is None:
-        return "Can't find the room name", 400
-    DB.setTarget(coordinates[0], coordinates[1])
+    roomName = request.get_json()['room']
+    print(roomName)
+    DB.setTarget(roomName)
     return "OK", 200
 
 
-@app.route('/updateStatus')
-def index1(status):
-    """
-    מגדיר את הסטטוס של הרחפן להיות הסטטוס החדש
-    :param status <Status Object>
-    """
-    return 'Web App with Python Flask!'
-
-
-@app.route('/getInstructions',methods=["POST"])
+@app.route('/getInstructions', methods=["POST"])
 def getInstructions():
     """
     -בודק האם המיקום הנוכחי של הרחפן שונה מנקודת היעד של הרחפן
     :return: <instruction List>
     """
-    # target = DB.getTarget()
-    # if abs(status['x'] - target[0]) > 10 or abs(status['y'] - target[1]):
-    #     pass
-
-    return 'print'
+    target = DB.getTarget()
+    if target is not None:
+        status = request.get_json()
+        if abs(status['x'] - target[0]) < 10 and abs(status['y'] - target[1])<10:
+            if target != DB.getRoomCoordinates('station'):
+                DB.setTarget('station')
+                return 'scan'
+            else:
+                if status['isFlying']:
+                    return 'land'
+                else:
+                    return ''
+        else:
+            if status['isFlying']:
+                return f'go {target[0]} {target[1]}'
+            else:
+                return 'takeoff'
 
 
 @app.route('/getStatus')

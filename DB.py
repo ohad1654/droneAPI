@@ -1,33 +1,30 @@
 import json
+import os.path
 
-STATUS_PATH = r'C:\Users\user\Desktop\droneAPI\DB\db.json'
-
-
-def getStatus():
-    return json.load(open(STATUS_PATH, 'rb'))['status']
+STATUS_PATH = r'C:\Users\user\Desktop\droneAPI\DB\target.txt'
 
 
-def setStatus(newStatus):
-    data = json.load(open(STATUS_PATH, 'rb'))
-    data['status'] = newStatus
-    json.dump(data, open(STATUS_PATH, 'wb'))
-
-
-def setTarget(targetX,targetY):
-    data = json.load(open(STATUS_PATH, 'rb'))
-    data['targetX'] = targetX
-    data['targetY'] = targetY
-    json.dump(data, open(STATUS_PATH, 'wb'))
+def setTarget(roomName):
+    f = open(STATUS_PATH, 'w')
+    f.write(roomName)
 
 
 def getTarget():
-    return (321, 454)
+    f = open(STATUS_PATH, 'r')
+    roomName = f.read()
+    if roomName == '':
+        return None
+    return getRoomCoordinates(roomName)
 
 
 def getRoomNameList():
-    return ["סלון"]
+    return ["roomA", "roomB",'station']
 
 
 def getRoomCoordinates(roomName):
-    if roomName == 'סלון':
-        return (322, 100)
+    if roomName == 'roomA':
+        return (180, 120)
+    if roomName == 'roomB':
+        return (200, 100)
+    if roomName =='station':
+        return (0,0)

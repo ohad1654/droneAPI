@@ -16,7 +16,12 @@ def index(roomName):
     :param roomName the room name to navigate to
     :return 400 אם אי אפשר להגיע מהמיקום הנוכחי ליעד
     """
-    return 'Web App with Python Flask!'
+
+    coordinates = DB.getRoomCoordinates(roomName)
+    if coordinates == None:
+        return "Can't find the room name",400
+    DB.setTarget(coordinates)
+    return "OK",200
 
 
 @app.route('/updateStatus')
@@ -88,7 +93,8 @@ def index6():
     מחזיר את רשימת החדרים
     :return <Room Object> list
     """
-    return 'Web App with Python Flask!'
+
+    return DB.getRoomNameList()
 
 
 app.run(host='0.0.0.0', port=81)

@@ -1,28 +1,33 @@
-STATUS_PATH=""
+import json
 
-class DB:
+STATUS_PATH = r'C:\Users\user\Desktop\droneAPI\DB\db.json'
 
-    def getStatus(self):
-        return {
-            'position': (1257, 3672),
-            'height': 180,
-            'angle': 63,
-            'streaming': False,
-            'battery': 76,
-        }
 
-    def setStatus(self, newStatus):
-        pass
+def getStatus():
+    return json.load(open(STATUS_PATH, 'rb'))['status']
 
-    def setTarget(self, target):
-        pass
 
-    def getTarget(self):
-        return (321, 454)
+def setStatus(newStatus):
+    data = json.load(open(STATUS_PATH, 'rb'))
+    data['status'] = newStatus
+    json.dump(data, open(STATUS_PATH, 'wb'))
 
-    def getRoomNameList(self):
-        return ["סלון"]
 
-    def getRoomCoordinates(self,roomName):
-        if roomName=='סלון':
-            return (322,100)
+def setTarget(targetX,targetY):
+    data = json.load(open(STATUS_PATH, 'rb'))
+    data['targetX'] = targetX
+    data['targetY'] = targetY
+    json.dump(data, open(STATUS_PATH, 'wb'))
+
+
+def getTarget():
+    return (321, 454)
+
+
+def getRoomNameList():
+    return ["סלון"]
+
+
+def getRoomCoordinates(roomName):
+    if roomName == 'סלון':
+        return (322, 100)

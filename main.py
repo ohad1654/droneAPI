@@ -1,9 +1,15 @@
-from flask import Flask
+import cv2
+from flask import Flask, request
+from multiprocessing import queues
+import DB
+import base64
+import numpy as np
 
 app = Flask(__name__)
+q = queues.Queue(25)  # base64 string
 
 
-@app.route('/navigateTo')
+@app.route('/navigate-to')
 def index(roomName):
     """
     בודק מה המיקום של החדר ומגדיר את נקודת היעד של הרחפן
@@ -23,12 +29,15 @@ def index1(status):
 
 
 @app.route('/getInstructions')
-def index2():
+def getInstructions(status):
     """
     -בודק האם המיקום הנוכחי של הרחפן שונה מנקודת היעד של הרחפן
-    -בודק האם צריך להפעיל/לכבות streaming
     :return: <instruction List>
     """
+    target = DB.getTarget()
+    if abs(status['x'] - target[0]) > 10 or abs(status['y'] - target[1]):
+        pass
+
     return 'Web App with Python Flask!'
 
 
@@ -41,13 +50,27 @@ def index3():
     return 'Web App with Python Flask!'
 
 
-@app.route('/startStreaming')
+@app.route('/add-frame')
+def index():
+    base64Raw = request.json['frame']
+    q.put(base64Raw)
+
+
+@app.route('/start-streaming')
 def index4():
     """
     להתחיל streaming בין הרחפן לאפליקציה
     :return: the streaming port
     """
-    return 'Web App with Python Flask!'
+
+    while True:
+        frame = q.get(True)
+        im_bytes = base64.b64decode(frame)
+        im_arr = np.frombuffer(im_bytes, dtype=np.uint8)
+        ret, buffer = cv2.imencode('.jpg', im_arr)
+        frame = buffer.tobytes()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')  # concat frame one by one and show result
 
 
 @app.route('/stopStreaming')

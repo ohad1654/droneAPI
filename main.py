@@ -33,17 +33,17 @@ def index1(status):
     return 'Web App with Python Flask!'
 
 
-@app.route('/getInstructions')
-def getInstructions(status):
+@app.route('/getInstructions',methods=["POST"])
+def getInstructions():
     """
     -בודק האם המיקום הנוכחי של הרחפן שונה מנקודת היעד של הרחפן
     :return: <instruction List>
     """
-    target = DB.getTarget()
-    if abs(status['x'] - target[0]) > 10 or abs(status['y'] - target[1]):
-        pass
+    # target = DB.getTarget()
+    # if abs(status['x'] - target[0]) > 10 or abs(status['y'] - target[1]):
+    #     pass
 
-    return 'Web App with Python Flask!'
+    return 'print'
 
 
 @app.route('/getStatus')
@@ -55,10 +55,15 @@ def index3():
     return 'Web App with Python Flask!'
 
 
-@app.route('/add-frame')
+@app.route('/add-frame', methods=["POST"])
 def add_frame():
-    base64Raw = request.json['frame']
+    print("add frame")
+    # print(request.get_json())
+    base64Raw = request.get_json()['framebs64']
+    print(len(base64Raw))
+
     q.put(base64Raw)
+    return "kjbsd"
 
 
 @app.route('/start-streaming')
@@ -70,9 +75,12 @@ def gen_frames():
 
     while True:
         frame = q.get(True)
-        im_bytes = base64.b64decode(frame)
+        print("frame")
+        print(len(frame))
+        im_bytes = base64.b64decode(frame.encode("utf-8"))
         im_arr = np.frombuffer(im_bytes, dtype=np.uint8)
-        ret, buffer = cv2.imencode('.jpg', im_arr)
+        img = cv2.imdecode(im_arr, flags=cv2.IMREAD_COLOR)
+        ret, buffer = cv2.imencode('.jpg', img)
         frame = buffer.tobytes()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')  # concat frame one by one and show result

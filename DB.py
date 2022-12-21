@@ -26,3 +26,4 @@ class DB:
     def getRoomCoordinates(self,roomName):
         if roomName=='סלון':
             return (322,100)
+

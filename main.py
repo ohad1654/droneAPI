@@ -1,12 +1,12 @@
 import cv2
-from flask import Flask, request
-from multiprocessing import queues
+from flask import Flask, request, Response, render_template
+from queue import Queue
 import DB
 import base64
 import numpy as np
 
 app = Flask(__name__)
-q = queues.Queue(25)  # base64 string
+q = Queue(25)  # base64 string
 
 
 @app.route('/navigate-to')
@@ -18,10 +18,10 @@ def index(roomName):
     """
 
     coordinates = DB.getRoomCoordinates(roomName)
-    if coordinates == None:
-        return "Can't find the room name",400
-    DB.setTarget(coordinates)
-    return "OK",200
+    if coordinates is None:
+        return "Can't find the room name", 400
+    DB.setTarget(coordinates[0], coordinates[1])
+    return "OK", 200
 
 
 @app.route('/updateStatus')
@@ -56,13 +56,13 @@ def index3():
 
 
 @app.route('/add-frame')
-def index():
+def add_frame():
     base64Raw = request.json['frame']
     q.put(base64Raw)
 
 
 @app.route('/start-streaming')
-def index4():
+def gen_frames():
     """
     להתחיל streaming בין הרחפן לאפליקציה
     :return: the streaming port
@@ -76,6 +76,16 @@ def index4():
         frame = buffer.tobytes()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')  # concat frame one by one and show result
+
+
+@app.route('/view-streaming')
+def index4():
+    return render_template('stream-viewer.html')
+
+
+@app.route('/video_feed')
+def video_feed():
+    return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 @app.route('/stopStreaming')

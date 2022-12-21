@@ -1,3 +1,5 @@
+STATUS_PATH=""
+
 class DB:
 
     def getStatus(self):
@@ -18,5 +20,9 @@ class DB:
     def getTarget(self):
         return (321, 454)
 
-    def getRoomList(self):
-        return [{"סלון": (322, 100)}]
+    def getRoomNameList(self):
+        return ["סלון"]
+
+    def getRoomCoordinates(self,roomName):
+        if roomName=='סלון':
+            return (322,100)

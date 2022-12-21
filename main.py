@@ -14,7 +14,7 @@ def index(roomName):
 
 
 @app.route('/updateStatus')
-def index(status):
+def index1(status):
     """
     מגדיר את הסטטוס של הרחפן להיות הסטטוס החדש
     :param status <Status Object>
@@ -23,7 +23,7 @@ def index(status):
 
 
 @app.route('/getInstructions')
-def index():
+def index2():
     """
     -בודק האם המיקום הנוכחי של הרחפן שונה מנקודת היעד של הרחפן
     -בודק האם צריך להפעיל/לכבות streaming
@@ -33,7 +33,7 @@ def index():
 
 
 @app.route('/getStatus')
-def index():
+def index3():
     """
     מחזיר את הסטטוס הנוכחי של הרחפן
     :return: <Status Object>
@@ -42,7 +42,7 @@ def index():
 
 
 @app.route('/startStreaming')
-def index():
+def index4():
     """
     להתחיל streaming בין הרחפן לאפליקציה
     :return: the streaming port
@@ -51,7 +51,7 @@ def index():
 
 
 @app.route('/stopStreaming')
-def index():
+def index5():
     """
     להפסיק את הstreaming
     :return: 200
@@ -60,7 +60,7 @@ def index():
 
 
 @app.route('/getRooms')
-def index():
+def index6():
     """
     מחזיר את רשימת החדרים
     :return <Room Object> list
